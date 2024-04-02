@@ -93,22 +93,25 @@ export class RecordService {
     }
 
     async getSensorData(sensor_key: string) {
-        // const data = await this.axiosRequest('GET', `feeds/${feed_key}/data`);
-        // const result = await data.map( item => {
-        //     return {
-        //         value: item.value,
-        //         key: item.feed_key,
-        //         createdAt: item.created_at,
-        //     }
-        // });
-        // const dbData = await this.recordRepository.findOne({where: {key: feed_key}});
-        // console.log(dbData);
-        // if (!dbData) {  
-        //     this.saveFeedDataToDb(result);
-        // }
-        // return result;
+        if (true) {
+            const data = await this.axiosRequest('GET', `feeds/${sensor_key}/data`);
+            const result = await data.map( item => {
+                return {
+                    value: item.value,
+                    key: item.feed_key,
+                    createdAt: item.created_at,
+                }
+            });
+            const dbData = await this.recordRepository.findOne({where: {key: sensor_key}});
+            console.log(dbData);
+            if (!dbData) {  
+                this.saveFeedDataToDb(result);
+            }
+            return result;
+        } else {
+            const data = await this.recordRepository.find({ where: { key: sensor_key } })
+            return data;
+        }
 
-        const data = await this.recordRepository.find({ where: { key: sensor_key } })
-        return data;
     }
 }
