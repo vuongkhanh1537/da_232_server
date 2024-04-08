@@ -16,4 +16,9 @@ export class RecordController {
     ) {
         return this.recordService.getSensorData(feedKey);
     }
+
+    @Get('getLastSensorData')
+    async getLastSensorData() {
+        return this.recordService.getLastDataOfAllFeeds();
+    }
 }
