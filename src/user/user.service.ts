@@ -32,11 +32,14 @@ export class UserService {
         }
     }
 
+    async findUserById(id: number) {
+        return await this.userRepository.findOne({where: {id}});
+    }
+
     async validateUserPassword(authCredentialDto: AuthCredentialDto): Promise<User> {
         const { username, password } = authCredentialDto;
 
         const user = await this.userRepository.findOne({ where: {username}});
-        console.log(user);
 
         if (user && await user.validatePassword(password)) {
             return user;

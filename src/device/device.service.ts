@@ -112,7 +112,6 @@ export class DeviceService {
                 message: "Turned on auto mode"
             } 
         }
-        
     }
 
     private async findDeviceInfoById(id) {

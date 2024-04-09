@@ -11,6 +11,17 @@ async function bootstrap() {
     .setTitle('DA 232')
     .setDescription('DA 232 for ! Smart Home')
     .setVersion('1.0')
+    .addBearerAuth(
+      { 
+        description: `[just text field] Please enter token here`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer', 
+        scheme: 'Bearer',
+        type: 'http', 
+        in: 'Header'
+      },
+      'access-token', 
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
