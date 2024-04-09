@@ -6,6 +6,7 @@ import { dbConfig } from './config/db.config';
 import { RecordModule } from './record/record.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { DeviceModule } from './device/device.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
     UserModule,
     RecordModule,
+    DeviceModule,
   ], 
   controllers: [], 
   providers: [],
