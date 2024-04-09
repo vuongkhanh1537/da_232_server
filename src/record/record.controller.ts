@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param } from '@nestjs/common';
 import { RecordService } from './record.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Records')
 @Controller('record')
 export class RecordController {
     constructor(private readonly recordService: RecordService) { }
