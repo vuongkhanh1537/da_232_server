@@ -81,14 +81,12 @@ export class DeviceService {
         const data = await this.getDeviceStatusByName(device.name);
         console.log(data.value);
         if (data.value === '0') {
-            // send value
-            // this.axiosService.axiosRequest('POST', '');
+            // this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, JSON.stringify({ value: 1 }));
             return {
                 message: "Device is turning on now"
             } 
         } else {
-            // send value
-            // this.axiosService.axiosRequest('POST', '');
+            // this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, JSON.stringify({ value: 0 }));
             return {
                 message: "Device is turning off now"
             } 
@@ -97,11 +95,12 @@ export class DeviceService {
 
     async toggleAutoModeDevice(id: number) {
         const device = await this.findDeviceInfoById(id);
+
         device.autoMode = !device.autoMode;
         device.save()
+        
         if (!device.autoMode) {
-            // send value
-            // this.axiosService.axiosRequest('POST', '');
+            
             return {
                 message: "Turned off auto mode"
             } 
@@ -114,7 +113,7 @@ export class DeviceService {
         }
     }
 
-    private async findDeviceInfoById(id) {
+    private async findDeviceInfoById(id: number) {
         const data = await this.deviceRepository.findOne({where:{id}});
         if (!data) {
             throw new NotFoundException('Device Not Found');

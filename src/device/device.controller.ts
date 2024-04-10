@@ -34,7 +34,6 @@ export class DeviceController {
     }
 
     @Get('toggleAutoModeDevice/:id')
-    
     toggleAutoModeDevice(
         @Param('id') id:number,
         @GetUser() user: User,
