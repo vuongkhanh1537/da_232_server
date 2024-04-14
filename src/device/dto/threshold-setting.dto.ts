@@ -6,11 +6,6 @@ export class DeviceThresholdSettingDto {
     @IsNumber()
     @IsNotEmpty()
     @ApiProperty()
-    maxThreshold: number;
-    
-    @IsOptional()
-    @IsNumber()
-    @IsNotEmpty()
-    @ApiProperty()
-    minThreshold: number;
+    thresholdValue: number;
+
 }

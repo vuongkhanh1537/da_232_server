@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 export class Record extends BaseEntity {
@@ -11,6 +11,6 @@ export class Record extends BaseEntity {
     @Column()
     value: string;
 
-    @CreateDateColumn()
-    createAt: Date;
-}
+    @Column()
+    createdAt: string;
+} 

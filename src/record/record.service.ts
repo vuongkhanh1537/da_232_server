@@ -16,9 +16,28 @@ export class RecordService {
         private recordRepository: Repository<Record>,
     ) {}
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
-    async handleCron() {
-        // await this.getLastDataOfAllFeeds();
+    @Cron(CronExpression.EVERY_30_SECONDS)
+    private async saveLastDataToDB() {
+        const data = await this.getLastDataOfAllFeeds();
+        data.map(async item =>{
+            const isExist = await this.recordRepository.findOne({ where: {
+                    key: item.key,
+                    value: item.value,
+                    createdAt: item.createdAt,
+                }})
+
+            if (!isExist) {
+                const record = new Record();
+                record.key = item.key;
+                record.value = item.value;
+                record.createdAt = item.createdAt;
+                try {
+                    record.save();
+                } catch(err) {
+                    console.log(err);
+                }
+            }
+        })
     }
 
     async getAllSensors(): Promise<any> {
@@ -40,24 +59,11 @@ export class RecordService {
         const result = this.list_sensors.map(async key => {
             const data = await this.axiosService.axiosRequest('GET', `feeds/${key}/data/last`);
             console.log(key, data.value, data.created_at);
-            return {key, value: data.value, createAt: data.created_at}
-
-            // const isExist = await this.recordRepository.findOne({ where: {
-            //     key: key,
-            //     value: data.value,
-            //     createAt: data.created_at,
-            // }})
-
-            // if (!isExist) {
-            //     const record = new Record();
-            //     record.key = key;
-            //     record.value = data.value;
-            //     record.createAt = data.created_at;
-            //     record.save();
-            // }
+            return {key, value: data.value, createdAt: data.created_at}
         })
+        console.log('-')
         return Promise.all(result);
-    }
+    } 
     
     async getSensorData(sensor_key: string) {
         const data = await this.axiosService.axiosRequest('GET', `feeds/${sensor_key}/data`);
@@ -79,13 +85,14 @@ export class RecordService {
         });
     }
 
-    private async saveFeedDataToDb(data) {
-        data.map(async item => {
-            const record = new Record();
-            record.key = item.key;
-            record.value = item.value;
-            record.createAt = item.createAt;
-            await record.save();
-        })
+    async getAllFeeds() {
+        const data = await this.axiosService.axiosRequest('GET', 'feeds');
+        return data.map(item => {
+            return {
+                id: item.id,
+                name: item.name,
+                key: item.key,
+            }
+        });
     }
 }

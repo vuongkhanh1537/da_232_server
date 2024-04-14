@@ -7,8 +7,8 @@ import { RecordModule } from './record/record.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DeviceModule } from './device/device.module';
-import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-redis-store';
+// import { CacheModule } from '@nestjs/cache-manager';
+// import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -18,12 +18,12 @@ import * as redisStore from 'cache-manager-redis-store';
     }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot(dbConfig),
-    CacheModule.register({ 
-      isGlobal: true,
-      store: redisStore,
-      host: 'redis',
-      port: 6379
-    }),
+    // CacheModule.register({ 
+    //   isGlobal: true,
+    //   store: redisStore,
+    //   host: 'redis',
+    //   port: 6379
+    // }),
     AuthModule,
     UserModule,
     RecordModule,

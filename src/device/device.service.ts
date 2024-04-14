@@ -7,7 +7,7 @@ import { DeviceThresholdSettingDto } from './dto/threshold-setting.dto';
 
 @Injectable()
 export class DeviceService {
-    private devices: string[]
+    private devices: string[];
     constructor(
         private readonly axiosService: AxiosService,
         @InjectRepository(Device)
@@ -17,7 +17,8 @@ export class DeviceService {
         this.devices = ['led', 'pump']
     }
 
-    async getDeviceStatus() {
+
+    async getAllDeviceStatus() {
         const data = this.devices.map(async device => {
             const data = await this.axiosService.axiosRequest('GET', `feeds/${device}/data/last`)
             return {
@@ -38,15 +39,22 @@ export class DeviceService {
         }
     }
 
-    async getDeviceInfo(deviceName: string) {
-        if (!this.devices.includes(deviceName)){ 
-            throw new NotFoundException('Device not found');
-        }
-        const data = await this.deviceRepository.findOne({where: {name: deviceName}});
+    async getAllDevices() {
+        const data = await this.deviceRepository.find();
         if (!data) {
-            return this.createDevice(deviceName);
-        } else {
-            return data;
+            await this.createDevice();
+        }
+        return data;
+    }
+
+    async getDeviceInfo(id: number) {
+        return await this.findDeviceInfoById(id);
+    }
+
+    async getThreshold(id: number) {
+        const device = await this.findDeviceInfoById(id);
+        return {
+            value: device.thresholdValue,
         }
     }
 
@@ -55,20 +63,10 @@ export class DeviceService {
         deviceThresholdSettingDto: DeviceThresholdSettingDto,
     ) {
         const device = await this.findDeviceInfoById(id);
-        const { maxThreshold, minThreshold } = deviceThresholdSettingDto;
-
-        if (maxThreshold < minThreshold) {
-            throw new BadRequestException('Max threshold must greater than min threshold')
-        }
-
-        if (maxThreshold) {
-            device.maxThreshold = maxThreshold;
-        }
-
-        if (minThreshold) {
-            device.minThreshold = minThreshold;
-        }
-
+        const typeThreshold = device.thresholdType;
+        const { thresholdValue } = deviceThresholdSettingDto;
+        this.axiosService.axiosRequest('POST', `feeds/${typeThreshold}/data`, { value: thresholdValue });
+        device.thresholdValue = thresholdValue;
         await device.save();
     }
 
@@ -79,14 +77,13 @@ export class DeviceService {
         }
 
         const data = await this.getDeviceStatusByName(device.name);
-        console.log(data.value);
         if (data.value === '0') {
-            // this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, JSON.stringify({ value: 1 }));
+            this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, { value: 1 });
             return {
                 message: "Device is turning on now"
             } 
         } else {
-            // this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, JSON.stringify({ value: 0 }));
+            this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, { value: 0 });
             return {
                 message: "Device is turning off now"
             } 
@@ -95,39 +92,50 @@ export class DeviceService {
 
     async toggleAutoModeDevice(id: number) {
         const device = await this.findDeviceInfoById(id);
-
-        device.autoMode = !device.autoMode;
-        device.save()
+        const autoMode = await this.axiosService.axiosRequest('GET', `feeds/${device.name}-mode/data/last`);
         
+        device.autoMode = !parseInt(autoMode.value);
+        await device.save();
         if (!device.autoMode) {
-            
+            this.axiosService.axiosRequest('POST', `feeds/${device.name}-mode/data`, { value: 0 })
             return {
                 message: "Turned off auto mode"
             } 
         } else {
-            // send value
-            // this.axiosService.axiosRequest('POST', '');
+            this.axiosService.axiosRequest('POST', `feeds/${device.name}-mode/data`, { value: 1 })
             return {
                 message: "Turned on auto mode"
             } 
         }
     }
 
+    async asyncDevices() {
+        this.devices.map(async deviceName => {
+            const device = await this.deviceRepository.findOne({ where:{ name: deviceName } });
+            const autoMode = (await this.axiosService.axiosRequest('GET', `feeds/${deviceName}-mode/data/last`)).value;
+            const thresholdValue = (await this.axiosService.axiosRequest('GET', `feeds/${device.thresholdType}/data/last`)).value;
+            device.autoMode = autoMode === '0'? false : true;
+            device.thresholdValue = thresholdValue;
+            await device.save();
+        })
+    }
+
     private async findDeviceInfoById(id: number) {
-        const data = await this.deviceRepository.findOne({where:{id}});
+        const data = await this.deviceRepository.findOne({ where:{ id } });
         if (!data) {
             throw new NotFoundException('Device Not Found');
         } 
         return data;
     }
 
-    private async createDevice(deviceName: string) {
-        const device = new Device();
-        device.name = deviceName;
-        device.autoMode = false;
-        device.maxThreshold = 0;
-        device.minThreshold = 0;
-        await device.save();
-        return device;
+    private async createDevice() {
+        this.devices.map(async deviceName => {
+            const device = new Device();
+            device.name = deviceName;
+            device.autoMode = false;
+            device.thresholdValue = 0;
+            device.thresholdType = deviceName === 'led'? 'threshold-light' : 'threshold-temp'; 
+            await device.save();
+        })
     }
 }

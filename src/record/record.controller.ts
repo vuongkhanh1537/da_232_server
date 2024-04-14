@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param } from '@nestjs/common';
 import { RecordService } from './record.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -8,11 +8,13 @@ export class RecordController {
     constructor(private readonly recordService: RecordService) { }
 
     @Get('getAllSensors')
+    @HttpCode(200)
     async getAllSensors() {
         return this.recordService.getAllSensors();
     }
 
     @Get('getSensorData/:sensor_key')
+    @HttpCode(200)
     async getSensorData(
         @Param('sensor_key') feedKey: string,
     ) {
@@ -20,7 +22,14 @@ export class RecordController {
     }
 
     @Get('getLastSensorData')
+    @HttpCode(200)
     async getLastSensorData() {
         return this.recordService.getLastDataOfAllFeeds();
+    }
+
+    @Get('getAllFeeds')
+    @HttpCode(200)
+    async getAllFeeds() {
+        return this.recordService.getAllFeeds();
     }
 }

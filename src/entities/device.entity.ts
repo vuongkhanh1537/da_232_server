@@ -12,8 +12,8 @@ export class Device extends BaseEntity {
     autoMode: boolean;
 
     @Column()
-    maxThreshold: number;
+    thresholdValue: number;
 
     @Column()
-    minThreshold: number;
+    thresholdType: string;
 }
