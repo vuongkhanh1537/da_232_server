@@ -36,3 +36,23 @@ Nhập thông tin dưới đây:
 **password:** admin
 
 Vậy là ta đã có thể truy cập vào pgAdmin để xem sự thay đổi trong db rồi
+
+# Tạo database thông qua pgAdmin
+
+Trong pgAdmin, nhấp chuột phải vào server và chọn Register -> Server
+
+Đặt tên server tuỳ ý
+
+Với phần Connection, hãy điền các thông tin như dưới đây
+
+**Hostname/address:** db
+**username:** postgres
+**password:** postgres
+
+Chọn Save.
+
+Khi server được tạo, nhấp chuột phải vào Database, chọn Create -> Database
+
+Trong phần name, điền tên **da-232**
+
+
