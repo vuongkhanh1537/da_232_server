@@ -80,11 +80,15 @@ export class DeviceService {
         if (data.value === '0') {
             this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, { value: 1 });
             return {
+                value: 1,
+                device,
                 message: "Device is turning on now"
             } 
         } else {
             this.axiosService.axiosRequest('POST', `feeds/${device.name}/data`, { value: 0 });
             return {
+                value: 0,
+                device,
                 message: "Device is turning off now"
             } 
         }
@@ -99,11 +103,15 @@ export class DeviceService {
         if (!device.autoMode) {
             this.axiosService.axiosRequest('POST', `feeds/${device.name}-mode/data`, { value: 0 })
             return {
+                value: 0,
+                device,
                 message: "Turned off auto mode"
             } 
         } else {
             this.axiosService.axiosRequest('POST', `feeds/${device.name}-mode/data`, { value: 1 })
             return {
+                value: 1,
+                device,
                 message: "Turned on auto mode"
             } 
         }

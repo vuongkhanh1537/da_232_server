@@ -5,13 +5,16 @@ import { AxiosService } from 'src/config/axios.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Device } from 'src/entities/device.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { LogService } from 'src/log/log.service';
+import { LogModule } from 'src/log/log.module';
+import { ActivityLog } from 'src/entities/activity-log.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Device]),
-    AuthModule
+    TypeOrmModule.forFeature([Device, ActivityLog]),
+    AuthModule, 
   ],
   controllers: [DeviceController],
-  providers: [DeviceService, AxiosService]
+  providers: [DeviceService, AxiosService, LogService]
 })
 export class DeviceModule {}

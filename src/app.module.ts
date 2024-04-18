@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DeviceModule } from './device/device.module';
 // import { CacheModule } from '@nestjs/cache-manager';
+import { LogModule } from './log/log.module';
 // import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
@@ -28,6 +29,7 @@ import { DeviceModule } from './device/device.module';
     UserModule,
     RecordModule,
     DeviceModule,
+    LogModule,
   ], 
   controllers: [], 
   providers: [],

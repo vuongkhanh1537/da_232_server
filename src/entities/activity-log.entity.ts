@@ -1,13 +1,20 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "./user.entity";
 
 @Entity()
-class ActivityLog extends BaseEntity {
+export class ActivityLog extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    status: string;
+    action: string;
 
     @CreateDateColumn()
-    createAt: Date;
+    createdAt: Date;
+
+    @ManyToOne(type => User, user => user.logs, {eager: true})
+    user: User;
+
+    @Column({nullable: true})
+    userId: number | null;
 }

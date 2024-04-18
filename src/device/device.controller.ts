@@ -5,6 +5,7 @@ import { DeviceThresholdSettingDto } from './dto/threshold-setting.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { User } from 'src/entities/user.entity';
+import { LogService } from 'src/log/log.service';
 
 @ApiTags('Devices')
 @ApiBearerAuth('access-token')
@@ -12,7 +13,8 @@ import { User } from 'src/entities/user.entity';
 @Controller('device')
 export class DeviceController {
     constructor(
-        private readonly deviceService: DeviceService
+        private readonly deviceService: DeviceService,
+        private readonly logService: LogService,
     ) {}
 
     @Get('getAllDevices') 
@@ -35,20 +37,24 @@ export class DeviceController {
 
     @Get('toggleDevice/:id')
     @HttpCode(200)
-    toggleDevice(
+    async toggleDevice(
         @Param('id') id: number,
         @GetUser() user: User,
     ) {
-        return this.deviceService.toggleDevice(id);
+        const repsonse = await this.deviceService.toggleDevice(id);
+        this.logService.createLog(user.id, repsonse);
+        return repsonse;
     }
 
     @Get('toggleAutoModeDevice/:id')
     @HttpCode(200)
-    toggleAutoModeDevice(
+    async toggleAutoModeDevice(
         @Param('id') id:number,
         @GetUser() user: User,
     ) {
-        return this.deviceService.toggleAutoModeDevice(id);
+        const repsonse = await this.deviceService.toggleAutoModeDevice(id);
+        this.logService.createLog(user.id, repsonse);
+        return repsonse;
     }
 
     @Get('getThreshold/:id')
