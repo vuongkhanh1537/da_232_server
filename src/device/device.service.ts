@@ -41,7 +41,8 @@ export class DeviceService {
 
     async getAllDevices() {
         let data = await this.deviceRepository.find();
-        if (!data) {
+        console.log(data);
+        if (data.length == 0) {
             await this.createDevice();
             return await this.deviceRepository.find();
         }
