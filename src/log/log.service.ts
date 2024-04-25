@@ -10,12 +10,13 @@ export class LogService {
         private logRepository: Repository<ActivityLog>
     ) {}
 
-    async createLog(userId: number, data) {
+    async createLog(deviceId: number, userId: number, data) {
         const action = await this.handleResponse(data);
         const log = new ActivityLog();
         log.userId = userId;
         log.createdAt = new Date();
         log.action = action;
+        log.deviceId = deviceId;
         await log.save();
     }
 

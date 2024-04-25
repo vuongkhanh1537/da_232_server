@@ -1,4 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ActivityLog } from "./activity-log.entity";
+import { Record } from "./record.entity";
 
 @Entity()
 export class Device extends BaseEntity {
@@ -16,4 +18,10 @@ export class Device extends BaseEntity {
 
     @Column()
     thresholdType: string;
+
+    @OneToMany(type => ActivityLog, log => log.device, {eager: false})
+    logs: ActivityLog[];
+
+    @OneToMany(type => Record, record => record.device, {eager: false})
+    records: Record[];
 }

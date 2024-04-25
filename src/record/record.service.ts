@@ -1,36 +1,45 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios from 'axios';
 import { AxiosService } from 'src/config/axios.service';
+import { DeviceService } from 'src/device/device.service';
+import { Device } from 'src/entities/device.entity';
 import { Record } from 'src/entities/record.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class RecordService {
-    private readonly logger = new Logger(RecordService.name);
     private list_sensors: string[];
+    private list_devices: Promise<Device[]>;
     constructor(
         private axiosService: AxiosService,
         @InjectRepository(Record)
         private recordRepository: Repository<Record>,
-    ) {}
+        private deviceService: DeviceService
+    ) {
+        this.list_devices = deviceService.getAllDevices();
+    }
 
-    @Cron(CronExpression.EVERY_30_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS)
     private async saveLastDataToDB() {
         const data = await this.getLastDataOfAllFeeds();
         data.map(async item =>{
             const isExist = await this.recordRepository.findOne({ where: {
                     key: item.key,
                     value: item.value,
-                    createdAt: item.createdAt,
+                    createdAt: new Date(item.createdAt),
                 }})
+
+            const deviceId = item.key === 'temp-sensor' ? 
+                (await this.list_devices).find(device => device.name === 'pump').id :
+                (await this.list_devices).find(device => device.name === 'led').id;
 
             if (!isExist) {
                 const record = new Record();
                 record.key = item.key;
                 record.value = item.value;
-                record.createdAt = item.createdAt;
+                record.createdAt = new Date(item.createdAt);
+                record.deviceId = deviceId;
                 try {
                     record.save();
                 } catch(err) {

@@ -1,5 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
+import { Device } from "./device.entity";
 
 @Entity()
 export class ActivityLog extends BaseEntity {
@@ -17,4 +18,10 @@ export class ActivityLog extends BaseEntity {
 
     @Column({nullable: true})
     userId: number | null;
+
+    @ManyToOne(type => Device, device => device.logs, {eager: true})
+    device: Device;
+
+    @Column({nullable: true})
+    deviceId: number;
 }

@@ -41,7 +41,6 @@ export class DeviceService {
 
     async getAllDevices() {
         let data = await this.deviceRepository.find();
-        console.log(data);
         if (data.length == 0) {
             await this.createDevice();
             return await this.deviceRepository.find();
@@ -147,5 +146,6 @@ export class DeviceService {
             device.thresholdType = deviceName === 'led'? 'threshold-light' : 'threshold-temp'; 
             await device.save();
         })
+
     }
 }

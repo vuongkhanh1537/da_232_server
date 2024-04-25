@@ -42,7 +42,7 @@ export class DeviceController {
         @GetUser() user: User,
     ) {
         const repsonse = await this.deviceService.toggleDevice(id);
-        this.logService.createLog(user.id, repsonse);
+        this.logService.createLog(id, user.id, repsonse);
         return repsonse;
     }
 
@@ -53,7 +53,7 @@ export class DeviceController {
         @GetUser() user: User,
     ) {
         const repsonse = await this.deviceService.toggleAutoModeDevice(id);
-        this.logService.createLog(user.id, repsonse);
+        this.logService.createLog(id, user.id, repsonse);
         return repsonse;
     }
 
