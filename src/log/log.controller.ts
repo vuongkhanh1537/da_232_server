@@ -29,7 +29,7 @@ export class LogController {
         return this.logService.findLogsInTimeRange(startDateObj, endDateObj);
     }
 
-    @Get('search/:userId')
+    @Get('search/:username')
     findLogsByUserId(
         @Param('userId') userId: number,
     ) {

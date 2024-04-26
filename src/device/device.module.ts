@@ -13,6 +13,7 @@ import { ActivityLog } from 'src/entities/activity-log.entity';
   imports: [
     TypeOrmModule.forFeature([Device, ActivityLog]),
     AuthModule, 
+    LogModule
   ],
   controllers: [DeviceController],
   providers: [DeviceService, AxiosService, LogService]

@@ -20,7 +20,7 @@ export class RecordService {
         this.list_devices = deviceService.getAllDevices();
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron("*/15 * * * * *")
     private async saveLastDataToDB() {
         const data = await this.getLastDataOfAllFeeds();
         data.map(async item =>{

@@ -22,6 +22,9 @@ export class ActivityLog extends BaseEntity {
     @ManyToOne(type => Device, device => device.logs, {eager: true})
     device: Device;
 
-    @Column({nullable: true})
+    @Column({nullable: false})
     deviceId: number;
+
+    @Column({nullable: false})
+    value: number;
 }

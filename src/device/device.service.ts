@@ -4,6 +4,8 @@ import { AxiosService } from 'src/config/axios.service';
 import { Device } from 'src/entities/device.entity';
 import { Repository } from 'typeorm';
 import { DeviceThresholdSettingDto } from './dto/threshold-setting.dto';
+import { Cron } from '@nestjs/schedule';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class DeviceService {
@@ -11,7 +13,8 @@ export class DeviceService {
     constructor(
         private readonly axiosService: AxiosService,
         @InjectRepository(Device)
-        private deviceRepository: Repository<Device>
+        private deviceRepository: Repository<Device>,
+        private readonly logService: LogService,
 
     ) {
         this.devices = ['led', 'pump']
@@ -116,6 +119,25 @@ export class DeviceService {
                 message: "Turned on auto mode"
             } 
         }
+    }
+
+    @Cron("*/15 * * * * *")
+    private async cronDevice() {
+        this.devices.map(async deviceName => {
+            const device = await this.deviceRepository.findOne({ where: { name: deviceName }});
+            if (device.autoMode) {
+                const currentStatus = await this.getDeviceStatusByName(deviceName);
+                const lastStatus = await this.logService.getLastStatusByDevice(device.id);
+                if (currentStatus.value != lastStatus.value) {
+                    const data = {
+                        value: currentStatus.value,
+                        device,
+                        message: "",
+                    };
+                    this.logService.createLog(device.id, 0, data);
+                } 
+            }
+        })
     }
 
     async asyncDevices() {

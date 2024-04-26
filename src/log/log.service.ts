@@ -11,12 +11,14 @@ export class LogService {
     ) {}
 
     async createLog(deviceId: number, userId: number, data) {
+        const { value } = data;
         const action = await this.handleResponse(data);
         const log = new ActivityLog();
-        log.userId = userId;
+        log.userId = userId === 0? null: userId;
         log.createdAt = new Date();
         log.action = action;
         log.deviceId = deviceId;
+        log.value = value;
         await log.save();
     }
 
@@ -46,6 +48,14 @@ export class LogService {
             .orderBy('log.id', 'DESC')
             .getMany()
         return this.removePassword(logs);
+    }
+
+    async getLastStatusByDevice(deviceId: number) {
+        return await this.logRepository
+            .createQueryBuilder('log')
+            .where('log.deviceId = :deviceId', { deviceId })
+            .orderBy('log.createdAt', 'DESC')
+            .getOne();
     }
 
     private async removePassword(logs: ActivityLog[]) {
