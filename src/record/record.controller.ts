@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Query } from '@nestjs/common';
 import { RecordService } from './record.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -25,6 +25,15 @@ export class RecordController {
     @HttpCode(200)
     async getLastSensorData() {
         return this.recordService.getLastDataOfAllFeeds();
+    }
+
+    @Get('getSensorDataByTime')
+    getSensorDataByTime(
+        @Query('sensor_key') sensorKey: string,
+        @Query('start_date') startDate: string,
+        @Query('end_date') endDate: string,
+    ) {
+        return this.recordService.getSensorDataByTime(sensorKey, startDate, endDate);
     }
 
     @Get('getAllFeeds')

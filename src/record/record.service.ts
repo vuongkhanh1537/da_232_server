@@ -86,6 +86,16 @@ export class RecordService {
         
         return result;
     }
+
+    async getSensorDataByTime(sensor_key: string, start_date: string, end_date: string) {
+        return await this.recordRepository
+            .createQueryBuilder('record')
+            .where('record.key = :sensor_key', { sensor_key })
+            .andWhere('record.createdAt >= :start_date', { start_date })
+            .andWhere('record.createdAt <= :end_date', { end_date })
+            .orderBy('record.id', 'DESC')
+            .getMany();
+    }
     
     private async getAllSensorsKey(): Promise<string[]> {
         const feeds = await this.getAllSensors();
