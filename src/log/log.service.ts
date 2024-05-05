@@ -26,11 +26,11 @@ export class LogService {
         return (await this.removePassword(logs)).reverse();
     }
 
-    async findLogsByUserId(id: number) {
+    async findLogsByUsername(username: string) {
         const logs = await this.logRepository
             .createQueryBuilder('log')
             .leftJoinAndSelect('log.user', 'user')
-            .where('user.id = :userId', { userId: id })
+            .where('user.username = :username', { username })
             .orderBy('log.id', 'DESC')
             .getMany();
         return this.removePassword(logs);
