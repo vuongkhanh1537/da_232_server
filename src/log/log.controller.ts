@@ -33,6 +33,6 @@ export class LogController {
     findLogsByUsername(
         @Param('username') username: string,
     ) {
-        return this.logService.findLogsByUserId(username);
+        return this.logService.findLogsByUsername(username);
     }
 }
