@@ -30,9 +30,14 @@ export class LogController {
     }
 
     @Get('search/:username')
+<<<<<<< HEAD
     findLogsByUserId(
         @Param('userId') userId: number,
+=======
+    findLogsByUsername(
+        @Param('username') username: string,
+>>>>>>> fc7a84c31695c37368558fadf6fce54f17d9d4b4
     ) {
-        return this.logService.findLogsByUserId(userId);
+        return this.logService.findLogsByUsername(username);
     }
 }
