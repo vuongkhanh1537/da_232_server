@@ -104,4 +104,63 @@ export class RecordService {
             }
         });
     }
+
+    async getSensorDataByTimeRange(sensor_key: string, startDate: Date, endDate: Date) {
+        const tempDate = new Date(endDate);
+        tempDate.setDate(tempDate.getDate() + 1);
+        return await this.recordRepository
+            .createQueryBuilder('record')
+            .where('record.key = :sensor_key', {sensor_key})
+            .andWhere('record.createdAt >= :startDate', { startDate })
+            .andWhere('record.createdAt <= :endDate', { endDate: tempDateư })
+            .orderBy('record.id', 'DESC') 
+            .getMany();    
+    } 
+
+    async saveSensorDataIntoDB() {
+        if (!this.list_sensors) {
+            this.list_sensors = await this.getAllSensorsKey();
+        }
+        const promises = this.list_sensors.map(async sensor => {
+            return await this.saveDataIntoDbByName(sensor);
+        })
+
+        Promise.all(promises)
+            .then(result => {
+                return "Successful";
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+    
+    private async saveDataIntoDbByName(feed_key: string) {
+        const start_time = '2024-01-01T00:00Z';
+        const end_time = '2024-05-01T00:00Z';
+        const data = await this.axiosService.axiosRequest('GET', `feeds/${feed_key}/data?start_time=${start_time}&end_time=${end_time}`);
+        data.map(async item =>{
+            const isExist = await this.recordRepository.findOne({ where: {
+                    key: feed_key,
+                    value: item.value,
+                    createdAt: new Date(item.created_at),
+                }})
+
+            const deviceId = item.key === 'temp-sensor' ? 
+                (await this.list_devices).find(device => device.name === 'pump').id :
+                (await this.list_devices).find(device => device.name === 'led').id;
+
+            if (!isExist) {
+                const record = new Record();
+                record.key = feed_key;
+                record.value = item.value;
+                record.createdAt = new Date(item.created_at);
+                record.deviceId = deviceId;
+                try {
+                    record.save();
+                } catch(err) {
+                    console.log(err);
+                }
+            }
+        })
+    }
 }
