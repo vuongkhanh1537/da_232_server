@@ -27,15 +27,6 @@ export class RecordController {
         return this.recordService.getLastDataOfAllFeeds();
     }
 
-<<<<<<< HEAD
-    @Get('search/date')
-    getSensorDataByTimeRange(
-        @Query('sensor_key') sensorKey: string,
-        @Query('start_date') startDate: string, 
-        @Query('end_date') endDate: string,
-    ) {
-        return this.getSensorDataByTimeRange(sensorKey, startDate, endDate);
-=======
     @Get('getSensorDataByTime')
     getSensorDataByTime(
         @Query('sensor_key') sensorKey: string,
@@ -43,7 +34,6 @@ export class RecordController {
         @Query('end_date') endDate: string,
     ) {
         return this.recordService.getSensorDataByTime(sensorKey, startDate, endDate);
->>>>>>> fc7a84c31695c37368558fadf6fce54f17d9d4b4
     }
 
     @Get('getAllFeeds')

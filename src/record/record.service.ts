@@ -115,18 +115,6 @@ export class RecordService {
         });
     }
 
-    async getSensorDataByTimeRange(sensor_key: string, startDate: Date, endDate: Date) {
-        const tempDate = new Date(endDate);
-        tempDate.setDate(tempDate.getDate() + 1);
-        return await this.recordRepository
-            .createQueryBuilder('record')
-            .where('record.key = :sensor_key', {sensor_key})
-            .andWhere('record.createdAt >= :startDate', { startDate })
-            .andWhere('record.createdAt <= :endDate', { endDate: tempDateư })
-            .orderBy('record.id', 'DESC') 
-            .getMany();    
-    } 
-
     async saveSensorDataIntoDB() {
         if (!this.list_sensors) {
             this.list_sensors = await this.getAllSensorsKey();
