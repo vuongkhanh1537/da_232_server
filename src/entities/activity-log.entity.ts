@@ -19,7 +19,7 @@ export class ActivityLog extends BaseEntity {
     @Column({nullable: true})
     userId: number | null;
 
-    @ManyToOne(type => Device, device => device.logs, {eager: true})
+    @ManyToOne(type => Device, device => device.logs, {eager: true, nullable: true})
     device: Device;
 
     @Column({nullable: false})
