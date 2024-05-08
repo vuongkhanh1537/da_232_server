@@ -60,7 +60,9 @@ export class LogService {
 
     private async removePassword(logs: ActivityLog[]) {
         return logs.map(log => {
-            delete log.user.password;
+            if (log.user) {
+                delete log.user.password;
+            }
             return log;
         })
     }
