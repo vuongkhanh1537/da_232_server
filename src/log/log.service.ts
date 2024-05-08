@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 import { ActivityLog } from 'src/entities/activity-log.entity';
 import { Repository } from 'typeorm';
 
@@ -29,13 +30,21 @@ export class LogService {
     }
 
     async findLogsByUsername(username: string) {
-        const logs = await this.logRepository
+        if (username === 'system' || username === 'System') {
+            return await this.logRepository
             .createQueryBuilder('log')
-            .leftJoinAndSelect('log.user', 'user')
-            .where('user.username = :username', { username })
+            .where('log.userId IS NULL')
             .orderBy('log.id', 'DESC')
             .getMany();
-        return this.removePassword(logs);
+        } else {
+            const logs = await this.logRepository
+                .createQueryBuilder('log')
+                .leftJoinAndSelect('log.user', 'user')
+                .where('user.username = :username', { username })
+                .orderBy('log.id', 'DESC')
+                .getMany();
+            return this.removePassword(logs);
+        }
     }
 
     async findLogsInTimeRange(startDate: Date, endDate: Date) {
